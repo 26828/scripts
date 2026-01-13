@@ -597,8 +597,7 @@ local function ChangeHealthBar(char)
 		RemoveESP(char)
 		return
 	end
-	print(hum.Health)
-
+	
 
 	local hp = hum.Health
 	local max = hum.MaxHealth
@@ -606,7 +605,7 @@ local function ChangeHealthBar(char)
 
 	data.Health.Size = UDim2.new(1,0,percent,0)
 
-	print(percent)
+	
 
 end
 
@@ -634,7 +633,7 @@ local function SpinBot()
 		if counter >= 360 then
 			counter = 1
 		else
-			counter = counter - 1
+			counter = counter + 1
 		end
 
 		hrp.CFrame = hrp.CFrame * CFrame.Angles(0,math.rad(counter),0)
