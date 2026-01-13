@@ -740,7 +740,7 @@ RunService.RenderStepped:Connect(function()
 
 end)
 
-coroutine.wrap()
+coroutine.wrap(function()
 	while true do 
 
 		for char,_ in pairs(chars.tracked) do
