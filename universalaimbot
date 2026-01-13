@@ -740,11 +740,13 @@ RunService.RenderStepped:Connect(function()
 
 end)
 
-while true do 
+coroutine.wrap()
+	while true do 
 
-	for char,_ in pairs(chars.tracked) do
-		ChangeHealthBar(char)
-	end  
-	task.wait(0.01)
+		for char,_ in pairs(chars.tracked) do
+			ChangeHealthBar(char)
+		end  
+		task.wait(0.01)
 	
-end
+	end
+end)()
