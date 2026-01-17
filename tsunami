@@ -1,0 +1,328 @@
+-- SERVICES
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+
+-- RAYFIELD
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local Window = Rayfield:CreateWindow({
+	Name = "🔥🔥🔥 Rezix Hub Escape Tsunami [FREE] 🔥🔥🔥",
+	Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+	LoadingTitle = "Loading...",
+	LoadingSubtitle = "by Rezix",
+	ShowText = "Rayfield", -- for mobile users to unhide rayfield, change if you'd like
+	Theme = {
+		TextColor = Color3.fromRGB(240, 240, 240),
+
+		Background = Color3.fromRGB(25, 25, 25),
+		Topbar = Color3.fromRGB(125, 90, 0),
+		Shadow = Color3.fromRGB(125, 90, 0),
+
+		NotificationBackground = Color3.fromRGB(125, 90, 0),
+		NotificationActionsBackground = Color3.fromRGB(230, 230, 230),
+
+		TabBackground = Color3.fromRGB(80, 80, 80),
+		TabStroke = Color3.fromRGB(125, 90, 0),
+		TabBackgroundSelected = Color3.fromRGB(210, 210, 210),
+		TabTextColor = Color3.fromRGB(240, 240, 240),
+		SelectedTabTextColor = Color3.fromRGB(50, 50, 50),
+
+		ElementBackground = Color3.fromRGB(35, 35, 35),
+		ElementBackgroundHover = Color3.fromRGB(125, 90, 0),
+		SecondaryElementBackground = Color3.fromRGB(25, 25, 25),
+		ElementStroke = Color3.fromRGB(125, 90, 0),
+		SecondaryElementStroke = Color3.fromRGB(125, 90, 0),
+
+		SliderBackground = Color3.fromRGB(125, 90, 0),
+		SliderProgress = Color3.fromRGB(125, 90, 0),
+		SliderStroke = Color3.fromRGB(125, 90, 0),
+
+		ToggleBackground = Color3.fromRGB(30, 30, 30),
+		ToggleEnabled = Color3.fromRGB(125, 90, 0),
+		ToggleDisabled = Color3.fromRGB(100, 100, 100),
+		ToggleEnabledStroke = Color3.fromRGB(125, 90, 0),
+		ToggleDisabledStroke = Color3.fromRGB(125, 125, 125),
+		ToggleEnabledOuterStroke = Color3.fromRGB(100, 100, 100),
+		ToggleDisabledOuterStroke = Color3.fromRGB(65, 65, 65),
+
+		DropdownSelected = Color3.fromRGB(125, 90, 0),
+		DropdownUnselected = Color3.fromRGB(30, 30, 30),
+
+		InputBackground = Color3.fromRGB(30, 30, 30),
+		InputStroke = Color3.fromRGB(125, 90, 0),
+		PlaceholderColor = Color3.fromRGB(178, 178, 178)
+	}, -- Check https://docs.sirius.menu/rayfield/configuration/themes
+
+	ToggleUIKeybind = "K", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
+
+	DisableRayfieldPrompts = false,
+	DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+
+	ConfigurationSaving = {
+		Enabled = true,
+		FolderName = nil, -- Create a custom folder for your hub/game
+		FileName = "Rezix Hub"
+	},
+
+	Discord = {
+		Enabled = true, -- Prompt the user to join your Discord server if their executor supports it
+		Invite = "NtNpcQpdwQ", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+		RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+	},
+	KeySystem = true, -- Set this to true to use our key system
+	KeySettings = {
+		Title = "Get Key From Discord",
+		Subtitle = "Key System",
+		Note = "Join Discord To Get Key dc.gg/rezixhub", -- Use this to tell the user how to get a key
+		FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+		SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+		GrabKeyFromSite = true, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+		Key = "https://pastebin.com/raw/1XHnWdLp"
+
+	}
+})
+
+local InfoTab = Window:CreateTab("Info", 4483362458)
+local MainTab = Window:CreateTab("Main", 4483362458)
+local MacroTab = Window:CreateTab("Macro", 4483362458)
+local MiscTab = Window:CreateTab("Misc", 4483362458)
+
+local Settings = {
+
+	
+	GodMode = false,
+	NoClip = false,
+	Collect = "None",
+	Upgrade = "None",
+	Speed = 16,
+	JumpHeight = 10,
+	MacroCollect = "None",
+	MacroUpgrade = "None"
+}
+
+MiscTab:CreateSlider({
+	Name = "Speed",
+	Range = {0, 1000},
+	Increment = 1,
+	CurrentValue = Settings.Speed,
+	Callback = function(v)
+		Settings.Speed = v
+	end
+})
+
+MiscTab:CreateSlider({
+	Name = "Jump Height",
+	Range = {0, 1000},
+	Increment = 1,
+	CurrentValue = Settings.JumpHeight,
+	Callback = function(v)
+		Settings.JumpHeight = v
+	end
+})
+
+MiscTab:CreateToggle({
+	Name = "God Mode",
+	CurrentValue = Settings.GodMode,
+	Callback = function(v)
+		Settings.GodMode = v
+	end
+})
+
+MiscTab:CreateToggle({
+	Name = "No Clip",
+	CurrentValue = Settings.NoClip,
+	Callback = function(v)
+		Settings.NoClip = v
+	end
+})
+
+
+
+local function Collect()
+	local Remote = game:GetService("ReplicatedStorage").RemoteEvents.CollectMoney
+
+	local slot = Settings.MacroCollect ~= "None" and Settings.MacroCollect or Settings.Collect
+	if slot == "None" then return end
+
+	-- NEVER SEND "All" TO SERVER
+	if slot == "All" then
+		for i = 1, 30 do
+			Remote:FireServer("Slot" .. i)
+			task.wait(0.03)
+		end
+	else
+		Remote:FireServer(slot)
+	end
+end
+
+local Dropdown = MainTab:CreateDropdown({
+	Name = "Collect Slot",
+	Options = {"None","Slot1","Slot2","Slot3","Slot4","Slot5","Slot6","Slot7","Slot8","Slot9","Slot10","Slot11","Slot12","Slot13","Slot14","Slot15","Slot16","Slot17","Slot18","Slot19","Slot20","Slot21","Slot22","Slot23","Slot24","Slot25","Slot26","Slot27","Slot28","Slot29","Slot30","All"},
+	CurrentOption = {"Select One"},
+	MultipleOptions = false,
+	Callback = function(v)
+
+		Settings.Collect = table.unpack(v)
+		
+	end,
+})
+
+local function Upgrade()
+	local RF = game:GetService("ReplicatedStorage")
+		:WaitForChild("RemoteFunctions")
+		:WaitForChild("UpgradeBrainrot")
+
+	local slot = Settings.MacroUpgrade ~= "None" and Settings.MacroUpgrade or Settings.Upgrade
+	if slot == "None" then return end
+
+	-- NEVER SEND "All" TO SERVER
+	if slot == "All" then
+		for i = 1, 30 do
+			RF:InvokeServer("Slot" .. i)
+			task.wait(0.05)
+		end
+	else
+		RF:InvokeServer(slot)
+	end
+end
+
+local DropdownUpgrade = MainTab:CreateDropdown({
+	Name = "Upgrade Slot",
+	Options = {"None","Slot1","Slot2","Slot3","Slot4","Slot5","Slot6","Slot7","Slot8","Slot9","Slot10","Slot11","Slot12","Slot13","Slot14","Slot15","Slot16","Slot17","Slot18","Slot19","Slot20","Slot21","Slot22","Slot23","Slot24","Slot25","Slot26","Slot27","Slot28","Slot29","Slot30","All"},
+	CurrentOption = {"Select One"},
+	MultipleOptions = false,
+	Callback = function(v)
+
+		Settings.Upgrade = table.unpack(v)
+		
+	end,
+})
+
+local DropdownMacroUpgrade = MacroTab:CreateDropdown({
+	Name = "Macro Upgrade Slot",
+	Options = {"None","Slot1","Slot2","Slot3","Slot4","Slot5","Slot6","Slot7","Slot8","Slot9","Slot10","Slot11","Slot12","Slot13","Slot14","Slot15","Slot16","Slot17","Slot18","Slot19","Slot20","Slot21","Slot22","Slot23","Slot24","Slot25","Slot26","Slot27","Slot28","Slot29","Slot30","All"},
+	CurrentOption = {"Select One"},
+	MultipleOptions = false,
+	Callback = function(v)
+
+		Settings.MacroUpgrade = table.unpack(v)
+		
+	end,
+})
+
+local DropdownMacroCollect = MacroTab:CreateDropdown({
+	Name = "Macro Collect Slot",
+	Options = {"None","Slot1","Slot2","Slot3","Slot4","Slot5","Slot6","Slot7","Slot8","Slot9","Slot10","Slot11","Slot12","Slot13","Slot14","Slot15","Slot16","Slot17","Slot18","Slot19","Slot20","Slot21","Slot22","Slot23","Slot24","Slot25","Slot26","Slot27","Slot28","Slot29","Slot30","All"},
+	CurrentOption = {"Select One"},
+	MultipleOptions = false,
+	Callback = function(v)
+
+		Settings.MacroCollect = table.unpack(v)
+		
+	end,
+})
+
+local function GiveGodMode(char)
+	
+	if Settings.GodMode then
+		for _, bp in pairs(char:GetChildren()) do
+			
+			if bp:IsA("BasePart") then
+			
+				bp.CanTouch = false;
+			end
+
+		end
+
+	else
+		
+		for _, bp in pairs(char:GetChildren()) do
+			
+			if bp:IsA("BasePart") then
+			
+				bp.CanTouch = true;
+			end
+
+		end
+
+	end
+end
+
+local function GiveNoClip(char)
+	
+	if Settings.NoClip then
+		for _, bp in pairs(char:GetChildren()) do
+			
+			if bp:IsA("BasePart") then
+			
+				bp.CanCollide = false;
+			end
+
+		end
+
+	else
+		
+		for _, bp in pairs(char:GetChildren()) do
+			
+			if bp:IsA("BasePart") then
+			
+				bp.CanCollide = true;
+			end
+
+		end
+
+	end
+end
+
+local function ChangeSpeed()
+
+	local Hum = LocalPlayer.Character:FindFirstChild("Humanoid")
+	
+
+	if Hum then
+		LocalPlayer.Character.Humanoid:GetPropertyChangedSignal'WalkSpeed':Connect(function()
+			LocalPlayer.Character.Humanoid.WalkSpeed = Settings.Speed;
+		end)
+		
+		LocalPlayer.Character.Humanoid.WalkSpeed = Settings.Speed
+
+		
+	end
+	
+end
+
+local function ChangeJumpHeight()
+
+	local Hum = LocalPlayer.Character:FindFirstChild("Humanoid")
+	
+
+	if Hum then
+		LocalPlayer.Character.Humanoid:GetPropertyChangedSignal'JumpHeight':Connect(function()
+			LocalPlayer.Character.Humanoid.JumpHeight = Settings.JumpHeight;
+		end)
+		
+		LocalPlayer.Character.Humanoid.JumpHeight = Settings.JumpHeight
+
+		
+	end
+	
+end
+
+coroutine.wrap(function()
+	while true do
+		
+		
+	GiveGodMode(LocalPlayer.Character);
+	GiveNoClip(LocalPlayer.Character);
+	Collect();
+	Upgrade();
+	ChangeJumpHeight();
+	ChangeSpeed();
+		
+	task.wait(.1);
+
+	end
+end)()
