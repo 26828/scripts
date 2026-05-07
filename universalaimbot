@@ -168,7 +168,7 @@ local Toggle = MiscTab:CreateToggle({
 
 FovTab:CreateSlider({
 	Name = "FOV Size",
-	Range = {50, 500},
+	Range = {20, 500},
 	Increment = 5,
 	CurrentValue = Settings.FOV,
 	Callback = function(v)
